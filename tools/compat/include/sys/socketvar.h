@@ -30,7 +30,7 @@
  *
  * $FreeBSD$
  */
-
+test 
 #ifndef _SYS_SOCKETVAR_H_
 #define _SYS_SOCKETVAR_H_
 
