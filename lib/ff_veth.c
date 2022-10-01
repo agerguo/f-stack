@@ -518,25 +518,31 @@ ff_veth_setaddr6(struct ff_veth_softc *sc)
 static int
 ff_veth_set_gateway6(struct ff_veth_softc *sc)
 {
-    struct sockaddr_in6 gw, dst, nm;;
     struct rt_addrinfo info;
     struct rib_cmd_info rci;
 
     bzero((caddr_t)&info, sizeof(info));
     info.rti_flags = RTF_GATEWAY;
 
+    struct sockaddr_in6 gw;
     bzero(&gw, sizeof(gw));
-    bzero(&dst, sizeof(dst));
-    bzero(&nm, sizeof(nm));
-
-    gw.sin6_len = dst.sin6_len = nm.sin6_len = sizeof(struct sockaddr_in6);
-    gw.sin6_family = dst.sin6_family = nm.sin6_family = AF_INET6;
-
+    gw.sin6_len = sizeof(struct sockaddr_in6);
+    gw.sin6_family = AF_INET6;
     gw.sin6_addr = sc->gateway6;
-    //dst.sin6_addr = nm.sin6_addr = 0;
-
     info.rti_info[RTAX_GATEWAY] = (struct sockaddr *)&gw;
+
+    struct sockaddr_in6 dst;
+    bzero(&dst, sizeof(dst));
+    dst.sin6_len = sizeof(struct sockaddr_in6);
+    dst.sin6_family = AF_INET6;
+    dst.sin6_addr = in6addr_any;
     info.rti_info[RTAX_DST] = (struct sockaddr *)&dst;
+
+    struct sockaddr_in6 nm;
+    bzero(&nm, sizeof(nm));
+    nm.sin6_len = sizeof(struct sockaddr_in6);
+    nm.sin6_family = AF_INET6;
+    nm.sin6_addr = in6addr_any;
     info.rti_info[RTAX_NETMASK] = (struct sockaddr *)&nm;
 
     return rib_action(RT_DEFAULT_FIB, RTM_ADD, &info, &rci);
